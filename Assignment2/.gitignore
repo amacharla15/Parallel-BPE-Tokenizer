@@ -12,6 +12,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# experiment / training outputs (not required for submission)
 outputs/
 results/
 runs/
@@ -20,17 +21,13 @@ logs/
 wandb/
 mlruns/
 
+# model weights (optional; include only if instructor wants them)
 *.pt
 *.pth
 *.ckpt
 *.onnx
 
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.pdf
-
+# datasets (do not upload CIFAR files)
 data/
 datasets/
 cifar-10-batches-py/
