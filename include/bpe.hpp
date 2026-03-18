@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <utility>
 
+
+std::vector<std::string> raw_text_to_symbols(const std::string& text);
 std::vector<std::string> get_adjacent_pairs(const std::vector<std::string>& symbols);
 
 std::pair<std::string, int> find_best_pair(

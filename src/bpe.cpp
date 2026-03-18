@@ -3,6 +3,20 @@
 
 using namespace std;
 
+vector<string> raw_text_to_symbols(const string& text)
+{
+    vector<string> symbols;
+
+    for (int i = 0; i < (int)text.size(); i++)
+    {
+        string one_char = "";
+        one_char = one_char + text[i];
+        symbols.push_back(one_char);
+    }
+
+    return symbols;
+}
+
 vector<string> get_adjacent_pairs(const vector<string>& symbols)
 {
     int n = symbols.size();
