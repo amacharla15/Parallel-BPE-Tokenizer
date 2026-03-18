@@ -1,6 +1,0 @@
-path: /mnt/c/Users/akshi/Downloads/611/Assignment3/data/processed/bstld_oneclass
-train: /mnt/c/Users/akshi/Downloads/611/Assignment3/data/processed/bstld_oneclass/train.txt
-val: /mnt/c/Users/akshi/Downloads/611/Assignment3/data/processed/bstld_oneclass/val.txt
-test: /mnt/c/Users/akshi/Downloads/611/Assignment3/data/processed/bstld_oneclass/test.txt
-names:
-  0: traffic_light
