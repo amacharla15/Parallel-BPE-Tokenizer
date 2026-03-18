@@ -1,5 +1,6 @@
 #include "bpe.hpp"
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -15,11 +16,30 @@ int main()
     merge_ranks["e r"] = 2;
     merge_ranks["low er"] = 3;
 
-    vector<string> result = apply_bpe(symbols, merge_ranks);
+    unordered_map<string, int> vocab;
+    vocab["l"] = 1;
+    vocab["o"] = 2;
+    vocab["w"] = 3;
+    vocab["e"] = 4;
+    vocab["r"] = 5;
+    vocab["lo"] = 6;
+    vocab["low"] = 7;
+    vocab["er"] = 8;
+    vocab["lower"] = 9;
 
-    for (int i = 0; i < (int)result.size(); i++)
+    vector<string> final_tokens = apply_bpe(symbols, merge_ranks);
+    vector<int> ids = tokens_to_ids(final_tokens, vocab);
+
+    cout << "Final tokens:" << endl;
+    for (int i = 0; i < (int)final_tokens.size(); i++)
     {
-        cout << result[i] << endl;
+        cout << final_tokens[i] << endl;
+    }
+
+    cout << "Token IDs:" << endl;
+    for (int i = 0; i < (int)ids.size(); i++)
+    {
+        cout << ids[i] << endl;
     }
 
     return 0;

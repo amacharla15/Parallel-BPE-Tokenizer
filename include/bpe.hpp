@@ -21,3 +21,8 @@ std::vector<std::string> apply_bpe(
     const std::vector<std::string>& symbols,
     const std::unordered_map<std::string, int>& merge_ranks
 );
+
+std::vector<int> tokens_to_ids(
+    const std::vector<std::string>& token,
+    const std::unordered_map<std::string, int>& vocab
+);

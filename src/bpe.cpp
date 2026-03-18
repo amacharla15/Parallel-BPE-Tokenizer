@@ -94,3 +94,22 @@ vector<string> apply_bpe(
 
     return current_symbols;
 }
+
+vector<int> tokens_to_ids(
+    const vector<string>& token,
+    const unordered_map<string, int>& vocab
+)
+{
+    int n = token.size();
+    vector<int> res;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (vocab.find(token[i]) != vocab.end())
+        {
+            res.push_back(vocab.at(token[i]));
+        }
+    }
+
+    return res;
+}
