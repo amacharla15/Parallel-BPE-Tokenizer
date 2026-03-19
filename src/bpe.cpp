@@ -8,6 +8,7 @@
 #include <algorithm>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
+#include "thread_pool.hpp"
 
 using namespace std;
 
@@ -359,6 +360,52 @@ std::vector<std::vector<int>> encode_batch_parallel(
     {
         workers[i].join();
     }
+
+    return results;
+}
+
+std::vector<std::vector<int>> encode_batch_thread_pool(
+    const std::string& path,
+    const TokenizerAssets& assets,
+    int num_threads
+)
+{
+    std::vector<std::string> texts = read_lines_from_file(path);
+
+    if (texts.empty())
+    {
+        return {};
+    }
+
+    if (num_threads <= 0)
+    {
+        num_threads = 1;
+    }
+
+    if (num_threads > (int)texts.size())
+    {
+        num_threads = (int)texts.size();
+    }
+
+    std::vector<std::vector<int>> results(texts.size());
+
+    ThreadPool pool((std::size_t)num_threads);
+
+    for (int i = 0; i < (int)texts.size(); i++)
+    {
+        pool.enqueue([&texts, &results, &assets, i]()
+{
+            std::cout << "Worker " << std::this_thread::get_id()
+                    << " processing line " << i << std::endl;
+
+            results[i] = encode_text(texts[i], assets);
+
+            std::cout << "Worker " << std::this_thread::get_id()
+                    << " finished line " << i << std::endl;
+        });
+    }
+
+    pool.wait_for_all();
 
     return results;
 }

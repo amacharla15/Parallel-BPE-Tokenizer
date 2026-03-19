@@ -44,3 +44,9 @@ std::vector<std::vector<int>> encode_batch_parallel(
     const TokenizerAssets& assets,
     int num_threads
 );
+
+std::vector<std::vector<int>> encode_batch_thread_pool(
+    const std::string& path,
+    const TokenizerAssets& assets,
+    int num_threads
+);
