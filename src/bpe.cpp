@@ -1,6 +1,8 @@
 #include "bpe.hpp"
 #include "byte_encoder.hpp"
 #include <climits>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 using namespace std;
 
@@ -126,39 +128,70 @@ vector<int> tokens_to_ids(
     return res;
 }
 
-vector<string> simple_split_text(const string& text)
+std::vector<std::string> simple_split_text(const std::string& text)
 {
-    int n = text.length();
-    int i = 0;
-    vector<string> result;
+    std::vector<std::string> result;
 
-    while (i < n)
+    const char* pattern =
+        "'s|'t|'re|'ve|'m|'ll|'d| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+(?!\\S)|\\s+";
+
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+
+    pcre2_code* re = pcre2_compile(
+        (PCRE2_SPTR)pattern,
+        PCRE2_ZERO_TERMINATED,
+        PCRE2_UTF | PCRE2_UCP,
+        &errornumber,
+        &erroroffset,
+        NULL
+    );
+
+    if (re == NULL)
     {
-        string chunk = "";
-
-        if (text[i] != ' ')
-        {
-            while (i < n && text[i] != ' ')
-            {
-                chunk = chunk + text[i];
-                i = i + 1;
-            }
-        }
-        else
-        {
-            while (i < n && text[i] == ' ')
-            {
-                chunk = chunk + text[i];
-                i = i + 1;
-            }
-        }
-
-        result.push_back(chunk);
+        return result;
     }
+
+    pcre2_match_data* match_data = pcre2_match_data_create_from_pattern(re, NULL);
+
+    PCRE2_SIZE offset = 0;
+    PCRE2_SIZE subject_length = (PCRE2_SIZE)text.size();
+
+    while (offset < subject_length)
+    {
+        int rc = pcre2_match(
+            re,
+            (PCRE2_SPTR)text.c_str(),
+            subject_length,
+            offset,
+            0,
+            match_data,
+            NULL
+        );
+
+        if (rc < 0)
+        {
+            break;
+        }
+
+        PCRE2_SIZE* ovector = pcre2_get_ovector_pointer(match_data);
+        PCRE2_SIZE start = ovector[0];
+        PCRE2_SIZE end = ovector[1];
+
+        if (end <= start)
+        {
+            break;
+        }
+
+        result.push_back(text.substr((size_t)start, (size_t)(end - start)));
+        offset = end;
+    }
+
+    pcre2_match_data_free(match_data);
+    pcre2_code_free(re);
 
     return result;
 }
-
 vector<int> encode_chunk(const string& chunk, const TokenizerAssets& assets)
 {
     vector<string> symbols = raw_text_to_symbols(chunk);

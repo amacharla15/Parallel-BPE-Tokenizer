@@ -121,9 +121,6 @@ void load_merges(TokenizerAssets& assets, const std::string& path)
         rank++;
     }
 
-    cout << "Valid merge lines read: " << valid_lines << endl;
-    cout << "Unique merge keys stored: " << assets.merge_ranks.size() << endl;
-    cout << "Duplicate/colliding keys: " << duplicate_keys << endl;
 }
 
 void print_summary(const TokenizerAssets& assets)
