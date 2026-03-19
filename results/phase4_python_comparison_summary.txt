@@ -1,0 +1,15 @@
+Loaded documents: 10000
+
+Tool = tiktoken_r50k_base
+Trial 1 | elapsed_sec = 0.571057 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 17511.394169 | tokens_per_sec = 2302923.447173
+Trial 2 | elapsed_sec = 0.680210 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 14701.344632 | tokens_per_sec = 1933373.832530
+Trial 3 | elapsed_sec = 0.546899 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 18284.897296 | tokens_per_sec = 2404646.843372
+Median | elapsed_sec = 0.571057 | docs_per_sec = 17511.394169 | tokens_per_sec = 2302923.447173
+
+Tool = hf_gpt2_fast
+Trial 1 | elapsed_sec = 0.548950 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 18216.590640 | tokens_per_sec = 2395663.835085
+Trial 2 | elapsed_sec = 0.575977 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 17361.794340 | tokens_per_sec = 2283249.573617
+Trial 3 | elapsed_sec = 0.470954 | total_docs = 10000 | total_tokens = 1315100 | docs_per_sec = 21233.514750 | tokens_per_sec = 2792419.524797
+Median | elapsed_sec = 0.548950 | docs_per_sec = 18216.590640 | tokens_per_sec = 2395663.835085
+
+Saved CSV to results/phase4_python_comparison.csv
