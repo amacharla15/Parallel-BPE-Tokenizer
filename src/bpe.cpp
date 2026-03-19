@@ -1,6 +1,9 @@
 #include "bpe.hpp"
 #include "byte_encoder.hpp"
 #include <climits>
+#include <fstream>
+#include <iostream>
+
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
@@ -213,6 +216,39 @@ vector<int> encode_text(const string& text, const TokenizerAssets& assets)
         {
             result.push_back(chunk_ids[j]);
         }
+    }
+
+    return result;
+}
+
+
+std::vector<std::vector<int>> encode_batch(const std::string& path, const TokenizerAssets& assets)
+{
+    std::ifstream fin(path);
+
+    if (!fin.is_open())
+    {
+        std::cout << "Could not open file: " << path << std::endl;
+        return {};
+    }
+
+    std::vector<std::vector<int>> result;
+    std::string line;
+
+    while (std::getline(fin, line))
+    {
+        if (!line.empty() && line.back() == '\r')
+        {
+            line.pop_back();
+        }
+
+        if (line.empty())
+        {
+            continue;
+        }
+
+        std::vector<int> ids = encode_text(line, assets);
+        result.push_back(ids);
     }
 
     return result;

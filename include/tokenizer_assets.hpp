@@ -5,6 +5,7 @@
 struct TokenizerAssets {
     std::unordered_map<std::string, int> vocab;
     std::unordered_map<std::string, int> merge_ranks;
+    std::unordered_map<std::string, int> document;
 };
 
 

@@ -1,34 +1,27 @@
 #include "bpe.hpp"
 #include "tokenizer_assets.hpp"
 #include <iostream>
-#include <string>
 #include <vector>
 
 using namespace std;
 
 int main()
 {
-    string user_input;
-    cout << "Enter text: ";
-    getline(cin, user_input);
-
     TokenizerAssets assets;
     load_vocab(assets, "data/vocab.json");
     load_merges(assets, "data/merges.txt");
 
-    vector<string> chunks = simple_split_text(user_input);
-    vector<int> ids = encode_text(user_input, assets);
+    vector<vector<int>> batch_ids = encode_batch("data/document.txt", assets);
 
-    cout << "Chunks:" << endl;
-    for (int i = 0; i < (int)chunks.size(); i++)
+    cout << "Batch tokenization results:" << endl;
+    for (int i = 0; i < (int)batch_ids.size(); i++)
     {
-        cout << "[" << chunks[i] << "]" << endl;
-    }
-
-    cout << "Token IDs:" << endl;
-    for (int i = 0; i < (int)ids.size(); i++)
-    {
-        cout << ids[i] << endl;
+        cout << "Line " << i + 1 << ":" << endl;
+        for (int j = 0; j < (int)batch_ids[i].size(); j++)
+        {
+            cout << batch_ids[i][j] << " ";
+        }
+        cout << endl;
     }
 
     return 0;

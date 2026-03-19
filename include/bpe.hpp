@@ -35,3 +35,5 @@ std::vector<std::string> simple_split_text(const std::string& text);
 std::vector<int> encode_chunk(const std::string& chunk, const TokenizerAssets& assets);
 
 std::vector<int> encode_text(const std::string& text, const TokenizerAssets& assets);
+
+std::vector<std::vector<int>> encode_batch(const std::string& path, const TokenizerAssets& assets);
