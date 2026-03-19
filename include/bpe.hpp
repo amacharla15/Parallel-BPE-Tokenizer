@@ -37,3 +37,10 @@ std::vector<int> encode_chunk(const std::string& chunk, const TokenizerAssets& a
 std::vector<int> encode_text(const std::string& text, const TokenizerAssets& assets);
 
 std::vector<std::vector<int>> encode_batch(const std::string& path, const TokenizerAssets& assets);
+
+
+std::vector<std::vector<int>> encode_batch_parallel(
+    const std::string& path,
+    const TokenizerAssets& assets,
+    int num_threads
+);

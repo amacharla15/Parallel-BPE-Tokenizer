@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <thread>
+#include <algorithm>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
@@ -252,4 +254,111 @@ std::vector<std::vector<int>> encode_batch(const std::string& path, const Tokeni
     }
 
     return result;
+}
+
+
+std::vector<std::string> read_lines_from_file(const std::string& path)
+{
+    std::ifstream fin(path);
+    if (!fin.is_open())
+    {
+        throw std::runtime_error("Failed to open file: " + path);
+    }
+
+    std::vector<std::string> texts;
+    std::string line;
+
+    while (std::getline(fin, line))
+    {
+        if (!line.empty() && line.back() == '\r')
+        {
+            line.pop_back();
+        }
+
+        texts.push_back(line);
+    }
+
+    return texts;
+}
+
+static void encode_range_worker(
+    const std::vector<std::string>& texts,
+    std::vector<std::vector<int>>& results,
+    int start_index,
+    int end_index,
+    const TokenizerAssets& assets
+)
+{
+    std::cout << "Thread " << std::this_thread::get_id()
+              << " started. Range: [" << start_index
+              << ", " << end_index << ")" << std::endl;
+
+    for (int i = start_index; i < end_index; i++)
+    {
+        std::cout << "Thread " << std::this_thread::get_id()
+                  << " processing line " << i << std::endl;
+
+        results[i] = encode_text(texts[i], assets);
+    }
+
+    std::cout << "Thread " << std::this_thread::get_id()
+              << " finished. Range: [" << start_index
+              << ", " << end_index << ")" << std::endl;
+}
+
+std::vector<std::vector<int>> encode_batch_parallel(
+    const std::string& path,
+    const TokenizerAssets& assets,
+    int num_threads
+)
+{
+    std::vector<std::string> texts = read_lines_from_file(path);
+
+    if (texts.empty())
+    {
+        return {};
+    }
+
+    if (num_threads <= 0)
+    {
+        num_threads = 1;
+    }
+
+    if (num_threads > (int)texts.size())
+    {
+        num_threads = (int)texts.size();
+    }
+
+    std::vector<std::vector<int>> results(texts.size());
+    std::vector<std::thread> workers;
+
+    int n = (int)texts.size();
+    int chunk_size = (n + num_threads - 1) / num_threads;
+
+    for (int t = 0; t < num_threads; t++)
+    {
+        int start_index = t * chunk_size;
+        int end_index = std::min(start_index + chunk_size, n);
+
+        if (start_index >= n)
+        {
+            break;
+        }
+
+        workers.emplace_back(
+            encode_range_worker,
+            std::cref(texts),
+            std::ref(results),
+            start_index,
+            end_index,
+            std::cref(assets)
+        );
+    }
+
+    for (int i = 0; i < (int)workers.size(); i++)
+    {
+        workers[i].join();
+    }
+
+    return results;
 }

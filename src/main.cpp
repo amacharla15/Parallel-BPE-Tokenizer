@@ -11,7 +11,7 @@ int main()
     load_vocab(assets, "data/vocab.json");
     load_merges(assets, "data/merges.txt");
 
-    vector<vector<int>> batch_ids = encode_batch("data/document.txt", assets);
+    vector<vector<int>> batch_ids = encode_batch_parallel("data/document.txt", assets, 3);
 
     cout << "Batch tokenization results:" << endl;
     for (int i = 0; i < (int)batch_ids.size(); i++)
