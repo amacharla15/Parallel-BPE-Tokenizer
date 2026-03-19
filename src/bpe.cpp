@@ -4,7 +4,12 @@
 
 using namespace std;
 
-
+vector<string> raw_text_to_symbols(const string& text)
+{
+    vector<int> bytes = text_to_bytes(text);
+    vector<string> symbols = bytes_to_symbols(bytes);
+    return symbols;
+}
 
 vector<string> get_adjacent_pairs(const vector<string>& symbols)
 {
@@ -26,27 +31,29 @@ pair<string, int> find_best_pair(
 {
     vector<string> pairs = get_adjacent_pairs(symbols);
 
-    int temp_rank = INT_MAX;
-    string temp_str = "";
+    int best_rank = INT_MAX;
+    string best_pair = "";
 
     for (int i = 0; i < (int)pairs.size(); i++)
     {
-        if (merge_ranks.find(pairs[i]) != merge_ranks.end())
+        auto it = merge_ranks.find(pairs[i]);
+
+        if (it != merge_ranks.end())
         {
-            if (merge_ranks.at(pairs[i]) < temp_rank)
+            if (it->second < best_rank)
             {
-                temp_str = pairs[i];
-                temp_rank = merge_ranks.at(pairs[i]);
+                best_pair = pairs[i];
+                best_rank = it->second;
             }
         }
     }
 
-    if (temp_str == "")
+    if (best_pair == "")
     {
         return {"", -1};
     }
 
-    return {temp_str, temp_rank};
+    return {best_pair, best_rank};
 }
 
 vector<string> merge_pair_once(const vector<string>& symbols, const pair<string, int>& best_pair)
@@ -108,18 +115,72 @@ vector<int> tokens_to_ids(
 
     for (int i = 0; i < n; i++)
     {
-        if (vocab.find(token[i]) != vocab.end())
+        auto it = vocab.find(token[i]);
+
+        if (it != vocab.end())
         {
-            res.push_back(vocab.at(token[i]));
+            res.push_back(it->second);
         }
     }
 
     return res;
 }
 
-vector<string> raw_text_to_symbols(const string& text)
+vector<string> simple_split_text(const string& text)
 {
-    vector<int> bytes = text_to_bytes(text);
-    vector<string> symbols = bytes_to_symbols(bytes);
-    return symbols;
+    int n = text.length();
+    int i = 0;
+    vector<string> result;
+
+    while (i < n)
+    {
+        string chunk = "";
+
+        if (text[i] != ' ')
+        {
+            while (i < n && text[i] != ' ')
+            {
+                chunk = chunk + text[i];
+                i = i + 1;
+            }
+        }
+        else
+        {
+            while (i < n && text[i] == ' ')
+            {
+                chunk = chunk + text[i];
+                i = i + 1;
+            }
+        }
+
+        result.push_back(chunk);
+    }
+
+    return result;
+}
+
+vector<int> encode_chunk(const string& chunk, const TokenizerAssets& assets)
+{
+    vector<string> symbols = raw_text_to_symbols(chunk);
+    vector<string> final_tokens = apply_bpe(symbols, assets.merge_ranks);
+    vector<int> ids = tokens_to_ids(final_tokens, assets.vocab);
+    return ids;
+}
+
+vector<int> encode_text(const string& text, const TokenizerAssets& assets)
+{
+    vector<string> chunks = simple_split_text(text);
+    vector<int> result;
+
+    for (int i = 0; i < (int)chunks.size(); i++)
+    {
+        vector<int> chunk_ids = encode_chunk(chunks[i], assets);
+
+        for (int j = 0; j < (int)chunk_ids.size(); j++)
+        {
+            result.push_back(chunk_ids[j]);
+        }
+    }
+
+    return result;
 }

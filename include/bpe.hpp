@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <unordered_map>
 #include <utility>
-
+#include <vector>
+#include "tokenizer_assets.hpp"
 
 std::vector<std::string> raw_text_to_symbols(const std::string& text);
+
 std::vector<std::string> get_adjacent_pairs(const std::vector<std::string>& symbols);
 
 std::pair<std::string, int> find_best_pair(
@@ -29,4 +30,8 @@ std::vector<int> tokens_to_ids(
     const std::unordered_map<std::string, int>& vocab
 );
 
-std::vector<std::string> raw_text_to_symbols(const std::string& text);
+std::vector<std::string> simple_split_text(const std::string& text);
+
+std::vector<int> encode_chunk(const std::string& chunk, const TokenizerAssets& assets);
+
+std::vector<int> encode_text(const std::string& text, const TokenizerAssets& assets);
