@@ -1,5 +1,8 @@
 # Parallel BPE Tokenizer in C++
 
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/29b43369-335a-433b-9ecc-bba222056e83" />
+
+
 A C++ systems project that implements a GPT-2-style byte-level BPE tokenizer from scratch, then scales it with parallel batch processing, a reusable thread pool, and a thread-local cache for repeated chunk reuse.
 
 This project is not just “tokenization.” It is a systems-focused performance project that combines:
